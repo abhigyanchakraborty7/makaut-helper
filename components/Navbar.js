@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
@@ -16,6 +16,8 @@ export default function Navbar({ openLogin }) {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [user, setUser] = useState(null);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -31,9 +33,20 @@ export default function Navbar({ openLogin }) {
     return () => subscription.unsubscribe();
   }, [openLogin]);
 
+  useEffect(() => {
+    const handler = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
+
   const handleLogout = async () => {
     await supabase.auth.signOut();
     setUser(null);
+    setDropdownOpen(false);
   };
 
   const handleGoogleLogin = async () => {
@@ -68,34 +81,27 @@ export default function Navbar({ openLogin }) {
     { href: "/cgpa", label: "CGPA" },
   ];
 
+  const getInitials = (user) => {
+    const name = user.user_metadata?.full_name || user.email || "";
+    return name.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2);
+  };
+
+  const getAvatar = (user) => user.user_metadata?.avatar_url || null;
+
   const renderLink = (l, closeMobile = false) => {
     const isProtected = PROTECTED.includes(l.href) && !user;
     const className = path === l.href ? "active" : "";
-
     if (isProtected) {
       return (
-        <a
-          key={l.href}
-          href="#"
-          className={className}
-          onClick={(e) => {
-            e.preventDefault();
-            if (closeMobile) setOpen(false);
-            setShowLogin(true);
-          }}
-        >
+        <a key={l.href} href="#" className={className}
+          onClick={(e) => { e.preventDefault(); if (closeMobile) setOpen(false); setShowLogin(true); }}>
           {l.label}
         </a>
       );
     }
-
     return (
-      <Link
-        key={l.href}
-        href={l.href}
-        className={className}
-        onClick={() => { if (closeMobile) setOpen(false); }}
-      >
+      <Link key={l.href} href={l.href} className={className}
+        onClick={() => { if (closeMobile) setOpen(false); }}>
         {l.label}
       </Link>
     );
@@ -125,22 +131,18 @@ export default function Navbar({ openLogin }) {
         }
         .nav-links a:hover, .nav-links a.active { color: #fff; }
         .nav-links a.active { color: #00e5ff; }
-        .nav-dev {
-          font-size: 0.7rem; color: rgba(255,255,255,0.28);
-          font-weight: 300; text-align: right;
-        }
-        .nav-right { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
+        .nav-dev { font-size: 0.7rem; color: rgba(255,255,255,0.28); font-weight: 300; text-align: right; }
+        .nav-right { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
         .nav-cta {
           padding: 0.45rem 1.1rem;
           border: 1px solid rgba(0,229,255,0.35);
           border-radius: 100px; color: #00e5ff;
           font-size: 0.825rem; font-weight: 500;
-          text-decoration: none; transition: all 0.2s; background: transparent;
-          cursor: pointer;
+          text-decoration: none; transition: all 0.2s; background: transparent; cursor: pointer;
         }
         .nav-cta:hover { background: rgba(0,229,255,0.08); border-color: #00e5ff; }
         .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; background: none; border: none; padding: 4px; }
-        .hamburger span { display: block; width: 22px; height: 2px; background: rgba(255,255,255,0.7); border-radius: 2px; transition: all 0.2s; }
+        .hamburger span { display: block; width: 22px; height: 2px; background: rgba(255,255,255,0.7); border-radius: 2px; }
         .mobile-menu {
           display: none; position: fixed; top: 60px; left: 0; right: 0; z-index: 99;
           background: rgba(8,8,8,0.97); border-bottom: 1px solid rgba(255,255,255,0.06);
@@ -153,22 +155,78 @@ export default function Navbar({ openLogin }) {
           .nav-links { display: none; }
           .hamburger { display: flex; }
         }
+
+        /* Avatar */
+        .avatar-wrap { position: relative; }
+        .avatar-btn {
+          width: 34px; height: 34px; border-radius: 50%;
+          border: 2px solid rgba(0,229,255,0.4);
+          cursor: pointer; overflow: hidden;
+          background: rgba(0,229,255,0.15);
+          display: flex; align-items: center; justify-content: center;
+          font-size: 0.75rem; font-weight: 700; color: #00e5ff;
+          transition: border-color 0.2s; padding: 0;
+        }
+        .avatar-btn:hover { border-color: #00e5ff; }
+        .avatar-btn img { width: 100%; height: 100%; object-fit: cover; }
+
+        /* Dropdown */
+        .avatar-dropdown {
+          position: absolute; top: calc(100% + 10px); right: 0;
+          background: #111; border: 1px solid rgba(255,255,255,0.1);
+          border-radius: 12px; padding: 0.5rem;
+          min-width: 210px;
+          box-shadow: 0 16px 48px rgba(0,0,0,0.5);
+          animation: slideUp 0.15s ease;
+        }
+        .dropdown-user {
+          padding: 0.6rem 0.75rem 0.75rem;
+          border-bottom: 1px solid rgba(255,255,255,0.07);
+          margin-bottom: 0.4rem;
+        }
+        .dropdown-name { font-size: 0.875rem; font-weight: 600; color: #fff; }
+        .dropdown-email { font-size: 0.72rem; color: rgba(255,255,255,0.35); margin-top: 2px; word-break: break-all; }
+        .dropdown-btn {
+          width: 100%; padding: 0.5rem 0.75rem;
+          background: none; border: none;
+          color: rgba(255,255,255,0.6); font-size: 0.825rem;
+          text-align: left; cursor: pointer; border-radius: 8px;
+          transition: all 0.15s; display: flex; align-items: center; gap: 0.5rem;
+        }
+        .dropdown-btn:hover { background: rgba(255,255,255,0.06); color: #fff; }
+        .dropdown-btn.logout { color: #ff6b6b; }
+        .dropdown-btn.logout:hover { background: rgba(255,107,107,0.08); }
+
+        /* Mobile user row */
+        .mobile-user-row {
+          display: flex; align-items: center; gap: 0.75rem;
+          padding-bottom: 1rem;
+          border-bottom: 1px solid rgba(255,255,255,0.07);
+        }
+        .mobile-avatar {
+          width: 38px; height: 38px; border-radius: 50%;
+          border: 2px solid rgba(0,229,255,0.4); overflow: hidden;
+          background: rgba(0,229,255,0.15);
+          display: flex; align-items: center; justify-content: center;
+          font-size: 0.75rem; font-weight: 700; color: #00e5ff; flex-shrink: 0;
+        }
+        .mobile-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .mobile-user-name { font-size: 0.875rem; color: #fff; font-weight: 600; }
+        .mobile-user-email { font-size: 0.72rem; color: rgba(255,255,255,0.35); }
+
+        /* Modal */
         .modal-overlay {
           position: fixed; inset: 0; z-index: 200;
-          background: rgba(0,0,0,0.75);
-          backdrop-filter: blur(6px);
+          background: rgba(0,0,0,0.75); backdrop-filter: blur(6px);
           display: flex; align-items: center; justify-content: center;
           animation: fadeIn 0.2s ease;
         }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         .modal {
-          background: #0e0e0e;
-          border: 1px solid rgba(255,255,255,0.08);
+          background: #0e0e0e; border: 1px solid rgba(255,255,255,0.08);
           border-radius: 16px; padding: 2rem;
-          width: 100%; max-width: 380px;
-          position: relative;
-          animation: slideUp 0.25s ease;
-          box-shadow: 0 24px 80px rgba(0,0,0,0.6);
+          width: 100%; max-width: 380px; position: relative;
+          animation: slideUp 0.25s ease; box-shadow: 0 24px 80px rgba(0,0,0,0.6);
         }
         @keyframes slideUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
         .modal-close {
@@ -182,10 +240,8 @@ export default function Navbar({ openLogin }) {
         .btn-google {
           width: 100%; padding: 0.65rem 1rem;
           display: flex; align-items: center; justify-content: center; gap: 0.6rem;
-          background: rgba(255,255,255,0.05);
-          border: 1px solid rgba(255,255,255,0.1);
-          border-radius: 8px; color: #fff;
-          font-size: 0.875rem; font-weight: 500;
+          background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+          border-radius: 8px; color: #fff; font-size: 0.875rem; font-weight: 500;
           cursor: pointer; transition: all 0.2s;
         }
         .btn-google:hover { background: rgba(255,255,255,0.09); border-color: rgba(255,255,255,0.2); }
@@ -195,19 +251,15 @@ export default function Navbar({ openLogin }) {
         .auth-form { display: flex; flex-direction: column; gap: 0.75rem; }
         .auth-input {
           width: 100%; padding: 0.65rem 0.9rem;
-          background: rgba(255,255,255,0.04);
-          border: 1px solid rgba(255,255,255,0.08);
-          border-radius: 8px; color: #fff;
-          font-size: 0.875rem; outline: none;
+          background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+          border-radius: 8px; color: #fff; font-size: 0.875rem; outline: none;
           transition: border-color 0.2s; box-sizing: border-box;
         }
         .auth-input::placeholder { color: rgba(255,255,255,0.25); }
         .auth-input:focus { border-color: rgba(0,229,255,0.4); }
         .btn-submit {
-          width: 100%; padding: 0.65rem;
-          background: #00e5ff; color: #000;
-          border: none; border-radius: 8px;
-          font-size: 0.875rem; font-weight: 600;
+          width: 100%; padding: 0.65rem; background: #00e5ff; color: #000;
+          border: none; border-radius: 8px; font-size: 0.875rem; font-weight: 600;
           cursor: pointer; transition: opacity 0.2s;
         }
         .btn-submit:hover { opacity: 0.88; }
@@ -221,21 +273,32 @@ export default function Navbar({ openLogin }) {
       <nav className="nav">
         <Link href="/" className="nav-logo">makaut<span>.</span>helper</Link>
         <ul className="nav-links">
-          {links.map(l => (
-            <li key={l.href}>{renderLink(l)}</li>
-          ))}
+          {links.map(l => <li key={l.href}>{renderLink(l)}</li>)}
         </ul>
         <div className="nav-right">
           <button className="hamburger" onClick={() => setOpen(!open)} aria-label="Menu">
             <span /><span /><span />
           </button>
-          <div className="desktop-only" style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "2px" }}>
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "4px" }}>
             {user ? (
-              <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-                <span style={{ color: "rgba(255,255,255,0.6)", fontSize: "0.8rem" }}>
-                  {user.user_metadata?.full_name || user.email}
-                </span>
-                <button className="nav-cta" onClick={handleLogout}>Logout</button>
+              <div className="avatar-wrap" ref={dropdownRef}>
+                <button className="avatar-btn" onClick={() => setDropdownOpen(!dropdownOpen)}>
+                  {getAvatar(user)
+                    ? <img src={getAvatar(user)} alt="avatar" referrerPolicy="no-referrer" />
+                    : getInitials(user)
+                  }
+                </button>
+                {dropdownOpen && (
+                  <div className="avatar-dropdown">
+                    <div className="dropdown-user">
+                      <div className="dropdown-name">{user.user_metadata?.full_name || "User"}</div>
+                      <div className="dropdown-email">{user.email}</div>
+                    </div>
+                    <button className="dropdown-btn logout" onClick={handleLogout}>
+                      🚪 Sign out
+                    </button>
+                  </div>
+                )}
               </div>
             ) : (
               <button className="nav-cta" onClick={() => setShowLogin(true)}>Login</button>
@@ -246,10 +309,24 @@ export default function Navbar({ openLogin }) {
       </nav>
 
       <div className={`mobile-menu ${open ? "open" : ""}`}>
+        {user && (
+          <div className="mobile-user-row">
+            <div className="mobile-avatar">
+              {getAvatar(user)
+                ? <img src={getAvatar(user)} alt="avatar" referrerPolicy="no-referrer" />
+                : getInitials(user)
+              }
+            </div>
+            <div>
+              <div className="mobile-user-name">{user.user_metadata?.full_name || "User"}</div>
+              <div className="mobile-user-email">{user.email}</div>
+            </div>
+          </div>
+        )}
         {links.map(l => renderLink(l, true))}
         {user ? (
-          <button className="nav-cta" style={{ width: "fit-content" }} onClick={handleLogout}>
-            Logout
+          <button className="nav-cta" style={{ width: "fit-content", color: "#ff6b6b", borderColor: "rgba(255,107,107,0.35)" }} onClick={handleLogout}>
+            Sign out
           </button>
         ) : (
           <button className="nav-cta" style={{ width: "fit-content" }} onClick={() => { setOpen(false); setShowLogin(true); }}>
