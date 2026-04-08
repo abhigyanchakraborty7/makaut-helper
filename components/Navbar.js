@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
@@ -13,6 +13,22 @@ export default function Navbar() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+    });
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    setUser(null);
+  };
 
   const links = [
     { href: "/", label: "Home" },
@@ -211,7 +227,16 @@ export default function Navbar() {
             <span /><span /><span />
           </button>
           <div className="desktop-only" style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "2px" }}>
-            <button className="nav-cta" onClick={() => setShowLogin(true)}>Login</button>
+            {user ? (
+  <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+    <span style={{ color: "rgba(255,255,255,0.6)", fontSize: "0.8rem" }}>
+      {user.user_metadata?.full_name || user.email}
+    </span>
+    <button className="nav-cta" onClick={handleLogout}>Logout</button>
+  </div>
+) : (
+  <button className="nav-cta" onClick={() => setShowLogin(true)}>Login</button>
+)}
             <span className="nav-dev">Developed by Abhigyan Chakraborty</span>
           </div>
         </div>
@@ -223,9 +248,15 @@ export default function Navbar() {
             {l.label}
           </Link>
         ))}
-        <button className="nav-cta" style={{ width: "fit-content" }} onClick={() => { setOpen(false); setShowLogin(true); }}>
-          Login
-        </button>
+        {user ? (
+  <button className="nav-cta" style={{ width: "fit-content" }} onClick={handleLogout}>
+    Logout
+  </button>
+) : (
+  <button className="nav-cta" style={{ width: "fit-content" }} onClick={() => { setOpen(false); setShowLogin(true); }}>
+    Login
+  </button>
+)}
       </div>
 
       {/* Login Modal */}
