@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 
-export default function Navbar() {
+export default function Navbar({ openLogin }) {
   const path = usePathname();
   const [open, setOpen] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
@@ -20,6 +20,9 @@ export default function Navbar() {
 if (params.get('login') === 'required') {
   setShowLogin(true)
 }
+if (openLogin) {
+    setShowLogin(true)
+  }
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
     });

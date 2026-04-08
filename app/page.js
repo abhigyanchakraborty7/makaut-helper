@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Navbar from "../components/Navbar";
+import { supabase } from "@/lib/supabaseClient";
 
 const styles = `
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -109,7 +110,7 @@ const styles = `
     border-radius: 20px; padding: 2rem; transition: all 0.3s;
     position: relative; overflow: hidden;
     animation: float 6s ease-in-out infinite;
-    text-decoration: none; display: block; color: inherit;
+    text-decoration: none; display: block; color: inherit; cursor: pointer;
   }
   .card:nth-child(2) { animation-delay: 1s; }
   .card:nth-child(3) { animation-delay: 2s; }
@@ -132,6 +133,10 @@ const styles = `
     font-size: 1.1rem; font-weight: 700; color: #fff; margin-bottom: 0.5rem;
   }
   .card-desc { font-size: 0.9rem; font-weight: 300; color: rgba(255,255,255,0.45); line-height: 1.6; }
+  .card-lock {
+    position: absolute; top: 1rem; right: 1rem;
+    font-size: 0.75rem; color: rgba(255,255,255,0.25);
+  }
   .stats-row {
     display: flex; justify-content: center; gap: 4rem; flex-wrap: wrap;
     padding: 4rem 2rem;
@@ -162,8 +167,12 @@ const styles = `
   }
 `;
 
+const PROTECTED = ["/notes", "/predictor"];
+
 export default function Home() {
   const [count, setCount] = useState(0);
+  const [user, setUser] = useState(null);
+  const [showLoginTrigger, setShowLoginTrigger] = useState(false);
 
   useEffect(() => {
     let frame;
@@ -177,6 +186,24 @@ export default function Home() {
     return () => cancelAnimationFrame(frame);
   }, []);
 
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+    });
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const handleCardClick = (e, href) => {
+    if (PROTECTED.includes(href) && !user) {
+      e.preventDefault();
+      setShowLoginTrigger(true);
+      setTimeout(() => setShowLoginTrigger(false), 500);
+    }
+  };
+
   const features = [
     { icon: "📄", title: "PYQ Solver", desc: "Upload any question and get a detailed 7-mark format answer instantly.", href: "/pyq-solver" },
     { icon: "🔮", title: "Important Questions", desc: "AI-predicted most-expected questions, subject-wise before your exams.", href: "/predictor" },
@@ -187,7 +214,7 @@ export default function Home() {
   return (
     <>
       <style>{styles}</style>
-      <Navbar />
+      <Navbar openLogin={showLoginTrigger} />
       <div style={{ position: "relative" }}>
         <div className="glow-orb orb1" />
         <div className="glow-orb orb2" />
@@ -230,7 +257,15 @@ export default function Home() {
           <h2 className="section-title">Everything you need to succeed</h2>
           <div className="cards-grid">
             {features.map((f, i) => (
-              <Link className="card" href={f.href} key={i}>
+              <Link
+                className="card"
+                href={f.href}
+                key={i}
+                onClick={(e) => handleCardClick(e, f.href)}
+              >
+                {PROTECTED.includes(f.href) && !user && (
+                  <span className="card-lock">🔒 Login required</span>
+                )}
                 <div className="card-icon">{f.icon}</div>
                 <h3 className="card-title">{f.title}</h3>
                 <p className="card-desc">{f.desc}</p>
