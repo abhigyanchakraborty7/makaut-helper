@@ -1,54 +1,85 @@
 "use client";
-import { useState } from "react";
 
-export default function Modal({ isOpen, onClose, title, children }) {
-  if (!isOpen) return null;
+import { useState } from "react";
+import Modal from "./Modal";
+import CGPACalculator from "./CGPACalculator";
+import NotesGenerator from "./NotesGenerator";
+import PYQSection from "./PYQSection";
+import SmartSuggestions from "./SmartSuggestions";
+import AIExamAssistant from "./AIExamAssistant";
+
+import {
+  LowerContainer,
+  LowerText,
+  LowerCard,
+  LowerCardTitle
+} from "./StyledComponents";
+
+export default function HomePage() {
+  const [activeModal, setActiveModal] = useState(null);
+
+  const openModal = (modalName) => setActiveModal(modalName);
+  const closeModal = () => setActiveModal(null);
 
   return (
-    <div style={{
-      position: "fixed",
-      inset: 0,
-      background: "rgba(0,0,0,0.6)",
-      backdropFilter: "blur(4px)",
-      zIndex: 999,
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-      padding: "2rem"
-    }}>
-      <div style={{
-        background: "#080808",
-        padding: "2rem",
-        borderRadius: "16px",
-        maxWidth: "500px",
-        width: "100%",
-        boxShadow: "0 0 20px rgba(0,229,255,0.3)",
-        position: "relative"
-      }}>
-        <h2 style={{ fontSize: "1.5rem", fontWeight: 700, marginBottom: "1rem", color: "#00e5ff" }}>
-          {title}
-        </h2>
+    <div>
+      {/* Heading text */}
+      <LowerText>Explore More Features</LowerText>
 
-        {/* Children will contain inputs/buttons */}
-        {children}
+      {/* Lower section with cards */}
+      <LowerContainer>
+        <LowerCard onClick={() => openModal("CGPACalculator")}>
+          <img src="/cgpa.png" alt="CGPA" />
+          <LowerCardTitle>CGPA Calculator</LowerCardTitle>
+        </LowerCard>
 
-        {/* Close Button */}
-        <button 
-          onClick={onClose}
-          style={{
-            position: "absolute",
-            top: "1rem",
-            right: "1rem",
-            background: "transparent",
-            border: "none",
-            fontSize: "1.2rem",
-            color: "#fff",
-            cursor: "pointer"
-          }}
-        >
-          ✕
-        </button>
-      </div>
+        <LowerCard onClick={() => openModal("NotesGenerator")}>
+          <img src="/notes.png" alt="Notes" />
+          <LowerCardTitle>Notes Generator</LowerCardTitle>
+        </LowerCard>
+
+        <LowerCard onClick={() => openModal("PYQ")}>
+          <img src="/pyq.png" alt="PYQ" />
+          <LowerCardTitle>PYQ Solver</LowerCardTitle>
+        </LowerCard>
+
+        <LowerCard onClick={() => openModal("SmartSuggestions")}>
+          <img src="/suggestions.png" alt="Suggestions" />
+          <LowerCardTitle>Important Questions</LowerCardTitle>
+        </LowerCard>
+
+        <LowerCard onClick={() => openModal("AIExamAssistant")}>
+          <img src="/ai.png" alt="AI" />
+          <LowerCardTitle>AI Exam Assistant</LowerCardTitle>
+        </LowerCard>
+      </LowerContainer>
+
+      {/* Conditional Modals */}
+      {activeModal === "CGPACalculator" && (
+        <Modal onClose={closeModal}>
+          <CGPACalculator />
+        </Modal>
+      )}
+      {activeModal === "NotesGenerator" && (
+        <Modal onClose={closeModal}>
+          <NotesGenerator />
+        </Modal>
+      )}
+      {activeModal === "PYQ" && (
+        <Modal onClose={closeModal}>
+          <PYQSection />
+        </Modal>
+      )}
+      {activeModal === "SmartSuggestions" && (
+        <Modal onClose={closeModal}>
+          <SmartSuggestions />
+        </Modal>
+      )}
+      {activeModal === "AIExamAssistant" && (
+        <Modal onClose={closeModal}>
+          <AIExamAssistant />
+        </Modal>
+      )}
     </div>
   );
 }
