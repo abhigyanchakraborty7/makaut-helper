@@ -22,32 +22,36 @@ export default function HomePage() {
   const closeModal = () => setActiveModal(null);
 
   return (
-    <div>
+    <div style={{ padding: "40px 20px" }}>
+      {/* Section Title */}
+      <LowerText style={{ fontSize: "1.5rem", marginBottom: "20px" }}>
+        Explore More Features
+      </LowerText>
+
       {/* Lower Section with Cards */}
-      <LowerText>Explore More Features</LowerText>
       <LowerContainer>
         <LowerCard onClick={() => openModal("CGPACalculator")}>
-          <img src="/cgpa.png" alt="CGPA" style={{ width: "60px" }} />
+          <img src="/cgpa.png" alt="CGPA" style={{ width: "60px", marginBottom: "10px" }} />
           <LowerCardTitle>CGPA Calculator</LowerCardTitle>
         </LowerCard>
 
         <LowerCard onClick={() => openModal("NotesGenerator")}>
-          <img src="/notes.png" alt="Notes" style={{ width: "60px" }} />
+          <img src="/notes.png" alt="Notes" style={{ width: "60px", marginBottom: "10px" }} />
           <LowerCardTitle>Notes Generator</LowerCardTitle>
         </LowerCard>
 
         <LowerCard onClick={() => openModal("PYQ")}>
-          <img src="/pyq.png" alt="PYQ" style={{ width: "60px" }} />
+          <img src="/pyq.png" alt="PYQ" style={{ width: "60px", marginBottom: "10px" }} />
           <LowerCardTitle>PYQ Solver</LowerCardTitle>
         </LowerCard>
 
         <LowerCard onClick={() => openModal("SmartSuggestions")}>
-          <img src="/suggestions.png" alt="Suggestions" style={{ width: "60px" }} />
+          <img src="/suggestions.png" alt="Suggestions" style={{ width: "60px", marginBottom: "10px" }} />
           <LowerCardTitle>Important Questions</LowerCardTitle>
         </LowerCard>
 
         <LowerCard onClick={() => openModal("AIExamAssistant")}>
-          <img src="/ai.png" alt="AI" style={{ width: "60px" }} />
+          <img src="/ai.png" alt="AI" style={{ width: "60px", marginBottom: "10px" }} />
           <LowerCardTitle>AI Exam Assistant</LowerCardTitle>
         </LowerCard>
       </LowerContainer>
