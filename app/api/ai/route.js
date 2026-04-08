@@ -55,6 +55,6 @@ export async function POST(req) {
     return Response.json({ result: text });
   } catch (err) {
     console.error("AI API error:", err);
-    return Response.json({ error: "Something went wrong. Please try again." }, { status: 500 });
+    return Response.json({ error: err.message }, { status: 500 });
   }
 }
