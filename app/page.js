@@ -206,6 +206,7 @@ export default function Home() {
               </div>
             ))}
             <NotesGeneratorCard />
+            <ImportantQuestionsCard /> 
           </div>
         </section>
 
