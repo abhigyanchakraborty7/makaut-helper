@@ -7,30 +7,20 @@ export default function AIExamAssistant() {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
 
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
-
-  const handleAsk = () => {
-    alert(`AI is answering: "${query}"`);
-  };
-
   return (
     <>
-      <StyledCard onClick={handleOpen}>
+      <StyledCard onClick={() => setOpen(true)}>
         <div className="card-icon">🤖</div>
-        <h3 className="card-title">AI Exam Assistant</h3>
-        <p className="card-desc">Ask anything about your syllabus and get instant, accurate answers.</p>
+        <h3 className="card-title">AI Assistant</h3>
+        <p className="card-desc">Ask anything</p>
       </StyledCard>
 
-      <Modal isOpen={open} onClose={handleClose} title="AI Exam Assistant">
-        <StyledInput 
-          type="text" 
-          placeholder="Type your question here..." 
-          value={query} 
-          onChange={(e) => setQuery(e.target.value)}
-        />
-        <StyledButton onClick={handleAsk}>Ask AI</StyledButton>
-      </Modal>
+      {open && (
+        <Modal onClose={() => setOpen(false)}>
+          <StyledInput value={query} onChange={(e)=>setQuery(e.target.value)} />
+          <StyledButton onClick={()=>alert(query)}>Ask</StyledButton>
+        </Modal>
+      )}
     </>
   );
 }

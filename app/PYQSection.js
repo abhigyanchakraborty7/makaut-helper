@@ -4,23 +4,20 @@ import { StyledCard, StyledButton } from "./StyledComponents";
 import Modal from "./Modal";
 
 export default function PYQSection() {
-  const [open, setOpen] = useState(false);
-
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  const [open,setOpen]=useState(false);
 
   return (
     <>
-      <StyledCard onClick={handleOpen}>
+      <StyledCard onClick={()=>setOpen(true)}>
         <div className="card-icon">📄</div>
-        <h3 className="card-title">Previous Year Questions</h3>
-        <p className="card-desc">Browse PYQs sorted by subject, semester & year. Never go in blind again.</p>
+        <h3 className="card-title">PYQ</h3>
       </StyledCard>
 
-      <Modal isOpen={open} onClose={handleClose} title="Previous Year Questions">
-        <p>Select your subject, semester & year to view questions.</p>
-        <StyledButton onClick={() => alert("PYQs loading...")}>View PYQs</StyledButton>
-      </Modal>
+      {open && (
+        <Modal onClose={()=>setOpen(false)}>
+          <StyledButton>View PYQ</StyledButton>
+        </Modal>
+      )}
     </>
   );
 }

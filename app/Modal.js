@@ -1,85 +1,44 @@
 "use client";
 
-import { useState } from "react";
-import Modal from "./Modal";
-import CGPACalculator from "./CGPACalculator";
-import NotesGenerator from "./NotesGenerator";
-import PYQSection from "./PYQSection";
-import SmartSuggestions from "./SmartSuggestions";
-import AIExamAssistant from "./AIExamAssistant";
+import styled from "styled-components";
 
-import {
-  LowerContainer,
-  LowerText,
-  LowerCard,
-  LowerCardTitle
-} from "./StyledComponents";
-
-export default function HomePage() {
-  const [activeModal, setActiveModal] = useState(null);
-
-  const openModal = (modalName) => setActiveModal(modalName);
-  const closeModal = () => setActiveModal(null);
-
+export default function Modal({ children, onClose }) {
   return (
-    <div>
-      {/* Heading text */}
-      <LowerText>Explore More Features</LowerText>
-
-      {/* Lower section with cards */}
-      <LowerContainer>
-        <LowerCard onClick={() => openModal("CGPACalculator")}>
-          <img src="/cgpa.png" alt="CGPA" />
-          <LowerCardTitle>CGPA Calculator</LowerCardTitle>
-        </LowerCard>
-
-        <LowerCard onClick={() => openModal("NotesGenerator")}>
-          <img src="/notes.png" alt="Notes" />
-          <LowerCardTitle>Notes Generator</LowerCardTitle>
-        </LowerCard>
-
-        <LowerCard onClick={() => openModal("PYQ")}>
-          <img src="/pyq.png" alt="PYQ" />
-          <LowerCardTitle>PYQ Solver</LowerCardTitle>
-        </LowerCard>
-
-        <LowerCard onClick={() => openModal("SmartSuggestions")}>
-          <img src="/suggestions.png" alt="Suggestions" />
-          <LowerCardTitle>Important Questions</LowerCardTitle>
-        </LowerCard>
-
-        <LowerCard onClick={() => openModal("AIExamAssistant")}>
-          <img src="/ai.png" alt="AI" />
-          <LowerCardTitle>AI Exam Assistant</LowerCardTitle>
-        </LowerCard>
-      </LowerContainer>
-
-      {/* Conditional Modals */}
-      {activeModal === "CGPACalculator" && (
-        <Modal onClose={closeModal}>
-          <CGPACalculator />
-        </Modal>
-      )}
-      {activeModal === "NotesGenerator" && (
-        <Modal onClose={closeModal}>
-          <NotesGenerator />
-        </Modal>
-      )}
-      {activeModal === "PYQ" && (
-        <Modal onClose={closeModal}>
-          <PYQSection />
-        </Modal>
-      )}
-      {activeModal === "SmartSuggestions" && (
-        <Modal onClose={closeModal}>
-          <SmartSuggestions />
-        </Modal>
-      )}
-      {activeModal === "AIExamAssistant" && (
-        <Modal onClose={closeModal}>
-          <AIExamAssistant />
-        </Modal>
-      )}
-    </div>
+    <Overlay onClick={onClose}>
+      <Box onClick={(e) => e.stopPropagation()}>
+        <Close onClick={onClose}>×</Close>
+        {children}
+      </Box>
+    </Overlay>
   );
 }
+
+const Overlay = styled.div`
+  position: fixed;
+  top:0; left:0;
+  width:100%;
+  height:100%;
+  background: rgba(0,0,0,0.6);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+`;
+
+const Box = styled.div`
+  background:#0f172a;
+  padding:20px;
+  border-radius:12px;
+  width:90%;
+  max-width:500px;
+`;
+
+const Close = styled.button`
+  position:absolute;
+  right:15px;
+  top:10px;
+  background:none;
+  border:none;
+  color:white;
+  font-size:20px;
+  cursor:pointer;
+`;
