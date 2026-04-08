@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
-import NotesGeneratorCard from "./NotesGenerator"; // your existing Notes Generator component
-import ImportantQuestionsCard from "./ImportantQuestionsCard"; // your existing Important Questions Predictor component
+import NotesGeneratorCard from "./NotesGenerator"; 
+import ImportantQuestionsCard from "./ImportantQuestionsCard";
 
 const styles = `
   @import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap');
@@ -27,10 +27,8 @@ const styles = `
 
   @keyframes fadeUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
   @keyframes pulse-ring { 0% { transform: scale(0.95); opacity: 0.6; } 70% { transform: scale(1.1); opacity: 0; } 100% { transform: scale(0.95); opacity: 0; } }
-  @keyframes float { 0%,100% { transform: translateY(0px); } 50% { transform: translateY(-8px); } }
   @keyframes shimmer { 0% { background-position: -200% center; } 100% { background-position: 200% center; } }
 
-  /* Nav styles */
   .nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 1.25rem 2rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.06); background: rgba(8,8,8,0.8); backdrop-filter: blur(12px); }
   .logo { font-family: 'Syne', sans-serif; font-size: 1.2rem; font-weight: 800; letter-spacing: -0.02em; color: #fff; }
   .logo span { color: #00e5ff; }
@@ -40,7 +38,6 @@ const styles = `
   .nav-cta { padding: 0.5rem 1.25rem; border: 1px solid rgba(0,229,255,0.4); border-radius: 100px; color: #00e5ff; font-size: 0.875rem; font-weight: 500; text-decoration: none; transition: all 0.2s; background: transparent; }
   .nav-cta:hover { background: rgba(0,229,255,0.08); border-color: #00e5ff; }
 
-  /* Hero styles */
   .hero { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 8rem 2rem 4rem; position: relative; z-index: 1; }
   .hero-badge { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.35rem 1rem; border: 1px solid rgba(0,229,255,0.25); border-radius: 100px; font-size: 0.8rem; color: #00e5ff; margin-bottom: 2rem; animation: fadeUp 0.6s ease both; background: rgba(0,229,255,0.05); }
   .badge-dot { width: 6px; height: 6px; border-radius: 50%; background: #00e5ff; position: relative; }
@@ -54,7 +51,22 @@ const styles = `
   .btn-ghost { padding: 0.85rem 2rem; background: transparent; color: rgba(255,255,255,0.7); border-radius: 100px; font-weight: 400; font-size: 0.95rem; text-decoration: none; border: 1px solid rgba(255,255,255,0.15); transition: all 0.2s; }
   .btn-ghost:hover { border-color: rgba(255,255,255,0.35); color: #fff; }
 
-  /* Glow orbs, features, cards, stats, CTA, footer ... keep all original CSS exactly as before ... */
+  .cards-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.5rem; margin-top: 3rem; }
+  .card { background: rgba(255,255,255,0.05); border-radius: 12px; padding: 1.5rem; animation: fadeUp 0.6s ease both; text-align: center; }
+  .card-icon { font-size: 2rem; margin-bottom: 0.75rem; }
+  .card-title { font-weight: 700; font-size: 1.1rem; margin-bottom: 0.5rem; }
+  .card-desc { font-weight: 300; font-size: 0.875rem; color: rgba(255,255,255,0.7); }
+
+  .stats-row { display: flex; justify-content: center; gap: 4rem; padding: 4rem 2rem 2rem; }
+  .stat { text-align: center; }
+  .stat-num { font-size: 2.5rem; font-weight: 700; color: #00e5ff; }
+  .stat-label { display: block; font-size: 0.9rem; color: rgba(255,255,255,0.7); }
+
+  .cta-section { background: rgba(0,229,255,0.05); text-align: center; padding: 5rem 2rem; border-radius: 24px; margin: 3rem auto; max-width: 900px; }
+  .cta-title { font-size: 2rem; font-weight: 800; margin-bottom: 1rem; }
+  .cta-sub { font-size: 1rem; font-weight: 300; margin-bottom: 2rem; }
+
+  footer { text-align: center; padding: 2rem 1rem; font-size: 0.875rem; color: rgba(255,255,255,0.5); }
 `;
 
 export default function Home() {
@@ -85,10 +97,6 @@ export default function Home() {
     <>
       <style>{styles}</style>
       <div className="noise">
-        <div className="glow-orb orb1" />
-        <div className="glow-orb orb2" />
-
-        {/* Nav */}
         <nav className="nav">
           <div className="logo">makaut<span>.</span>helper</div>
           <ul className="nav-links">
@@ -104,7 +112,6 @@ export default function Home() {
           </div>
         </nav>
 
-        {/* Hero */}
         <section className="hero">
           <div className="hero-badge">
             <span className="badge-dot" />
@@ -123,7 +130,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Stats */}
         <div className="stats-row">
           <div className="stat">
             <span className="stat-num">{count.toLocaleString()}<span>+</span></span>
@@ -139,25 +145,22 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Features */}
         <section className="features" id="features">
           <p className="section-label">What We Offer</p>
           <h2 className="section-title">Everything you need to succeed</h2>
           <div className="cards-grid">
-            {features.map((f, i) => (
+            {features.map((f,i)=>(
               <div className="card" key={i}>
                 <div className="card-icon">{f.icon}</div>
                 <h3 className="card-title">{f.title}</h3>
                 <p className="card-desc">{f.desc}</p>
               </div>
             ))}
-            {/* Added Cards */}
             <NotesGeneratorCard />
             <ImportantQuestionsCard />
           </div>
         </section>
 
-        {/* CTA */}
         <section className="cta-section">
           <h2 className="cta-title">Ready to study smarter?</h2>
           <p className="cta-sub">Join thousands of MAKAUT students already using the platform.</p>
