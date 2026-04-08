@@ -437,7 +437,12 @@ export default function Home() {
             <li><a href="#pyq">PYQs</a></li>
             <li><a href="#cgpa">CGPA</a></li>
           </ul>
-          <a href="#" className="nav-cta">Get Started</a>
+          <div style={{display:"flex", flexDirection:"column", alignItems:"flex-end", gap:"2px"}}>
+  <a href="#" className="nav-cta">Get Started</a>
+  <span style={{fontSize:"0.7rem", color:"rgba(255,255,255,0.3)", fontWeight:300}}>
+    Developed by Abhigyan Chakraborty
+  </span>
+</div>
         </nav>
 
         {/* Hero */}
