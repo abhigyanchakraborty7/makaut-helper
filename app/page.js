@@ -1,10 +1,60 @@
 "use client";
 import { useEffect, useState } from "react";
-import NotesGeneratorCard from "./NotesGeneratorCard";
-import ImportantQuestionsCard from "./ImportantQuestionsCard";  // ✅ import added
+import NotesGeneratorCard from "./NotesGenerator"; // your existing Notes Generator component
+import ImportantQuestionsCard from "./ImportantQuestionsCard"; // your existing Important Questions Predictor component
 
 const styles = `
-// ... keep your full CSS here, exactly as before ...
+  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #080808;
+    color: #f0f0f0;
+    font-family: 'DM Sans', sans-serif;
+    overflow-x: hidden;
+  }
+
+  .noise::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.4;
+  }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes pulse-ring { 0% { transform: scale(0.95); opacity: 0.6; } 70% { transform: scale(1.1); opacity: 0; } 100% { transform: scale(0.95); opacity: 0; } }
+  @keyframes float { 0%,100% { transform: translateY(0px); } 50% { transform: translateY(-8px); } }
+  @keyframes shimmer { 0% { background-position: -200% center; } 100% { background-position: 200% center; } }
+
+  /* Nav styles */
+  .nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 1.25rem 2rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.06); background: rgba(8,8,8,0.8); backdrop-filter: blur(12px); }
+  .logo { font-family: 'Syne', sans-serif; font-size: 1.2rem; font-weight: 800; letter-spacing: -0.02em; color: #fff; }
+  .logo span { color: #00e5ff; }
+  .nav-links { display: flex; gap: 2rem; list-style: none; }
+  .nav-links a { color: rgba(255,255,255,0.55); text-decoration: none; font-size: 0.9rem; font-weight: 400; transition: color 0.2s; }
+  .nav-links a:hover { color: #fff; }
+  .nav-cta { padding: 0.5rem 1.25rem; border: 1px solid rgba(0,229,255,0.4); border-radius: 100px; color: #00e5ff; font-size: 0.875rem; font-weight: 500; text-decoration: none; transition: all 0.2s; background: transparent; }
+  .nav-cta:hover { background: rgba(0,229,255,0.08); border-color: #00e5ff; }
+
+  /* Hero styles */
+  .hero { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 8rem 2rem 4rem; position: relative; z-index: 1; }
+  .hero-badge { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.35rem 1rem; border: 1px solid rgba(0,229,255,0.25); border-radius: 100px; font-size: 0.8rem; color: #00e5ff; margin-bottom: 2rem; animation: fadeUp 0.6s ease both; background: rgba(0,229,255,0.05); }
+  .badge-dot { width: 6px; height: 6px; border-radius: 50%; background: #00e5ff; position: relative; }
+  .badge-dot::after { content: ''; position: absolute; inset: -3px; border-radius: 50%; border: 1px solid #00e5ff; animation: pulse-ring 2s ease infinite; }
+  .hero-title { font-family: 'Syne', sans-serif; font-size: clamp(3rem, 8vw, 6rem); font-weight: 800; line-height: 1.0; letter-spacing: -0.03em; color: #fff; animation: fadeUp 0.6s ease 0.1s both; max-width: 900px; }
+  .hero-title .accent { background: linear-gradient(90deg, #00e5ff, #0070ff, #00e5ff); background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; animation: shimmer 4s linear infinite; }
+  .hero-sub { margin-top: 1.5rem; font-size: 1.1rem; font-weight: 300; color: rgba(255,255,255,0.5); max-width: 520px; line-height: 1.7; animation: fadeUp 0.6s ease 0.2s both; }
+  .hero-actions { margin-top: 2.5rem; display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; animation: fadeUp 0.6s ease 0.3s both; }
+  .btn-primary { padding: 0.85rem 2rem; background: #00e5ff; color: #080808; border-radius: 100px; font-weight: 500; font-size: 0.95rem; text-decoration: none; transition: all 0.2s; border: none; cursor: pointer; }
+  .btn-primary:hover { background: #33ecff; transform: translateY(-1px); }
+  .btn-ghost { padding: 0.85rem 2rem; background: transparent; color: rgba(255,255,255,0.7); border-radius: 100px; font-weight: 400; font-size: 0.95rem; text-decoration: none; border: 1px solid rgba(255,255,255,0.15); transition: all 0.2s; }
+  .btn-ghost:hover { border-color: rgba(255,255,255,0.35); color: #fff; }
+
+  /* Glow orbs, features, cards, stats, CTA, footer ... keep all original CSS exactly as before ... */
 `;
 
 export default function Home() {
@@ -34,8 +84,10 @@ export default function Home() {
   return (
     <>
       <style>{styles}</style>
-
       <div className="noise">
+        <div className="glow-orb orb1" />
+        <div className="glow-orb orb2" />
+
         {/* Nav */}
         <nav className="nav">
           <div className="logo">makaut<span>.</span>helper</div>
@@ -92,15 +144,16 @@ export default function Home() {
           <p className="section-label">What We Offer</p>
           <h2 className="section-title">Everything you need to succeed</h2>
           <div className="cards-grid">
-            {features.map((f,i)=>(
+            {features.map((f, i) => (
               <div className="card" key={i}>
                 <div className="card-icon">{f.icon}</div>
                 <h3 className="card-title">{f.title}</h3>
                 <p className="card-desc">{f.desc}</p>
               </div>
             ))}
+            {/* Added Cards */}
             <NotesGeneratorCard />
-            <ImportantQuestionsCard />  {/* ✅ added */}
+            <ImportantQuestionsCard />
           </div>
         </section>
 
