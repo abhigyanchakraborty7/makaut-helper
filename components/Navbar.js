@@ -16,6 +16,10 @@ export default function Navbar() {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+if (params.get('login') === 'required') {
+  setShowLogin(true)
+}
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
     });
