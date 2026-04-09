@@ -168,7 +168,7 @@ const styles = `
 
   /* ── Mobile Fixes ── */
   @media (max-width: 480px) {
-    .hero { padding: 6rem 1.25rem 3rem; }
+    .hero { padding: 7.5rem 1.25rem 3rem; }
     .hero-badge { font-size: 0.72rem; padding: 0.3rem 0.75rem; text-align: center; }
     .hero-sub { font-size: 0.95rem; }
     .hero-actions { flex-direction: column; align-items: center; gap: 0.75rem; width: 100%; }
