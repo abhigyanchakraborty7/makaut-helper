@@ -82,6 +82,19 @@ const css = `
   .breakdown-val { font-size: 1.1rem; font-weight: 700; color: #fff; }
   .breakdown-key { font-size: 0.72rem; color: rgba(255,255,255,0.35); margin-top: 2px; }
   .error-msg { color: #ff6b6b; font-size: 0.82rem; margin-top: 0.75rem; text-align: center; }
+
+  /* ── Mobile Fixes ── */
+  @media (max-width: 480px) {
+    .page { padding: 5.5rem 1rem 3rem; }
+    .card { padding: 1.25rem; }
+    .sem-selector { gap: 0.4rem; }
+    .sem-btn { width: 40px; height: 40px; font-size: 0.85rem; }
+    .sgpa-grid { grid-template-columns: 1fr 1fr; gap: 0.6rem; }
+    .result-num { font-size: 3.5rem; }
+    .result-card { padding: 1.5rem 1rem; }
+    .result-breakdown { gap: 1rem; }
+    .breakdown-val { font-size: 1rem; }
+  }
 `;
 
 function getGradeColor(cgpa) {
@@ -132,7 +145,6 @@ export default function CGPAPage() {
         <h1 className="page-title">CGPA <span>Calculator</span></h1>
         <p className="page-sub">Enter your SGPAs semester-wise. CGPA = Average of all SGPAs.</p>
 
-        {/* Step 1: Number of semesters */}
         <div className="card">
           <span className="card-label">Step 1 — How many semesters completed?</span>
           <div className="sem-selector">
@@ -148,7 +160,6 @@ export default function CGPAPage() {
           </div>
         </div>
 
-        {/* Step 2: SGPA inputs */}
         <div className="card">
           <span className="card-label">Step 2 — Enter your SGPA for each semester</span>
           <div className="sgpa-grid">
