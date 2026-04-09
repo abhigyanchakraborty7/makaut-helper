@@ -165,6 +165,24 @@ const styles = `
     color: rgba(255,255,255,0.25); font-size: 0.85rem;
     position: relative; z-index: 1;
   }
+
+  /* ── Mobile Fixes ── */
+  @media (max-width: 480px) {
+    .hero { padding: 6rem 1.25rem 3rem; }
+    .hero-badge { font-size: 0.72rem; padding: 0.3rem 0.75rem; text-align: center; }
+    .hero-sub { font-size: 0.95rem; }
+    .hero-actions { flex-direction: column; align-items: center; gap: 0.75rem; width: 100%; }
+    .btn-primary, .btn-ghost { width: 100%; max-width: 300px; text-align: center; }
+    .orb1 { width: 200px; height: 200px; left: 0; }
+    .orb2 { width: 150px; height: 150px; right: 0; }
+    .stats-row { gap: 2rem; padding: 2.5rem 1rem; margin: 0 1rem; }
+    .stat-num { font-size: 2rem; }
+    .features { padding: 3.5rem 1.25rem; }
+    .section-title { margin-bottom: 2rem; }
+    .cards-grid { grid-template-columns: 1fr; }
+    .cta-section { padding: 4rem 1.25rem; }
+    footer { padding: 1.5rem 1rem; font-size: 0.78rem; }
+  }
 `;
 
 const PROTECTED = ["/notes", "/predictor"];
