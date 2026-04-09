@@ -86,7 +86,7 @@ const css = `
 
   /* ── Mobile Fixes ── */
   @media (max-width: 480px) {
-    .page { padding: 5.5rem 1rem 3rem; }
+    .page { padding: 8.5rem 1rem 3rem; }
     .card { padding: 1.25rem; }
     .sem-selector { gap: 0.4rem; }
     .sem-btn { width: 40px; height: 40px; font-size: 0.85rem; }
