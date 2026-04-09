@@ -84,6 +84,46 @@ const css = `
   .breakdown-key { font-size: 0.72rem; color: rgba(255,255,255,0.35); margin-top: 2px; }
   .error-msg { color: #ff6b6b; font-size: 0.82rem; margin-top: 0.75rem; text-align: center; }
 
+  /* Section divider */
+  .section-divider {
+    border: none; border-top: 1px solid rgba(255,255,255,0.07);
+    margin: 2.5rem 0;
+  }
+  .section-heading {
+    font-family: var(--font-syne), sans-serif;
+    font-size: 1.4rem; font-weight: 800; color: #fff;
+    letter-spacing: -0.02em; margin-bottom: 0.35rem;
+  }
+  .section-heading span { color: #00e5ff; }
+  .section-sub { color: rgba(255,255,255,0.4); font-size: 0.875rem; margin-bottom: 1.5rem; }
+
+  /* Percentage converter */
+  .pct-input-row {
+    display: flex; gap: 0.75rem; align-items: flex-end;
+  }
+  .pct-field { flex: 1; display: flex; flex-direction: column; gap: 0.4rem; }
+  .pct-field label { font-size: 0.75rem; color: rgba(255,255,255,0.35); text-transform: uppercase; letter-spacing: 0.08em; }
+  .pct-convert-btn {
+    background: #00e5ff; color: #080808; border: none; border-radius: 10px;
+    padding: 0.6rem 1.25rem; font-size: 0.875rem; font-weight: 600;
+    cursor: pointer; transition: all 0.2s; font-family: var(--font-dm), sans-serif;
+    white-space: nowrap; height: 42px;
+  }
+  .pct-convert-btn:hover { background: #33ecff; }
+  .pct-result {
+    margin-top: 1.25rem; padding: 1.25rem;
+    background: rgba(0,229,255,0.05); border: 1px solid rgba(0,229,255,0.15);
+    border-radius: 14px; display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 0.75rem;
+  }
+  .pct-big {
+    font-family: var(--font-syne), sans-serif;
+    font-size: 2.5rem; font-weight: 800; color: #00e5ff; letter-spacing: -0.03em;
+  }
+  .pct-big span { font-size: 1.25rem; color: rgba(0,229,255,0.6); }
+  .pct-info { font-size: 0.78rem; color: rgba(255,255,255,0.3); margin-top: 0.25rem; }
+  .pct-error { color: #ff6b6b; font-size: 0.82rem; margin-top: 0.75rem; }
+
   /* ── Mobile Fixes ── */
   @media (max-width: 480px) {
     .page { padding: 8.5rem 1rem 3rem; }
@@ -95,6 +135,9 @@ const css = `
     .result-card { padding: 1.5rem 1rem; }
     .result-breakdown { gap: 1rem; }
     .breakdown-val { font-size: 1rem; }
+    .pct-input-row { flex-direction: column; }
+    .pct-convert-btn { width: 100%; height: auto; padding: 0.65rem; }
+    .pct-big { font-size: 2rem; }
   }
 `;
 
@@ -113,6 +156,11 @@ export default function CGPAPage() {
   const [cgpa, setCgpa] = useState(null);
   const [error, setError] = useState("");
 
+  // Percentage converter state
+  const [pctInput, setPctInput] = useState("");
+  const [percentage, setPercentage] = useState(null);
+  const [pctError, setPctError] = useState("");
+
   const updateSgpa = (i, val) => {
     const arr = [...sgpas];
     arr[i] = val;
@@ -123,17 +171,21 @@ export default function CGPAPage() {
     setError("");
     const values = sgpas.slice(0, numSem).map(v => parseFloat(v));
     for (let i = 0; i < values.length; i++) {
-      if (isNaN(values[i])) {
-        setError(`Please enter SGPA for Semester ${i + 1}.`);
-        return;
-      }
-      if (values[i] < 0 || values[i] > 10) {
-        setError(`SGPA for Semester ${i + 1} must be between 0 and 10.`);
-        return;
-      }
+      if (isNaN(values[i])) { setError(`Please enter SGPA for Semester ${i + 1}.`); return; }
+      if (values[i] < 0 || values[i] > 10) { setError(`SGPA for Semester ${i + 1} must be between 0 and 10.`); return; }
     }
     const total = values.reduce((a, b) => a + b, 0);
     setCgpa((total / numSem).toFixed(2));
+  };
+
+  const convertToPercentage = () => {
+    setPctError("");
+    setPercentage(null);
+    const val = parseFloat(pctInput);
+    if (isNaN(val)) { setPctError("Please enter a valid CGPA."); return; }
+    if (val < 0 || val > 10) { setPctError("CGPA must be between 0 and 10."); return; }
+    const pct = ((val - 0.75) * 10).toFixed(2);
+    setPercentage(pct);
   };
 
   const gradeInfo = cgpa ? getGradeColor(parseFloat(cgpa)) : null;
@@ -168,13 +220,8 @@ export default function CGPAPage() {
               <div className="sgpa-field" key={i}>
                 <label>Semester {i + 1}</label>
                 <input
-                  type="number"
-                  placeholder="e.g. 8.5"
-                  min="0"
-                  max="10"
-                  step="0.01"
-                  value={sgpas[i]}
-                  onChange={e => updateSgpa(i, e.target.value)}
+                  type="number" placeholder="e.g. 8.5" min="0" max="10" step="0.01"
+                  value={sgpas[i]} onChange={e => updateSgpa(i, e.target.value)}
                 />
               </div>
             ))}
@@ -210,6 +257,41 @@ export default function CGPAPage() {
             </div>
           </div>
         )}
+
+        {/* Percentage Converter */}
+        <hr className="section-divider" />
+        <h2 className="section-heading">CGPA to <span>Percentage</span></h2>
+        <p className="section-sub">Formula: Percentage = (CGPA − 0.75) × 10 &nbsp;·&nbsp; As per MAKAUT standard</p>
+
+        <div className="card">
+          <span className="card-label">Enter your CGPA</span>
+          <div className="pct-input-row">
+            <div className="pct-field">
+              <label>CGPA (0 – 10)</label>
+              <input
+                type="number" placeholder="e.g. 7.8" min="0" max="10" step="0.01"
+                value={pctInput} onChange={e => { setPctInput(e.target.value); setPercentage(null); setPctError(""); }}
+              />
+            </div>
+            <button className="pct-convert-btn" onClick={convertToPercentage}>Convert →</button>
+          </div>
+          {pctError && <p className="pct-error">{pctError}</p>}
+          {percentage && (
+            <div className="pct-result">
+              <div>
+                <div className="pct-big">{percentage}<span>%</span></div>
+                <div className="pct-info">({pctInput} − 0.75) × 10 = {percentage}%</div>
+              </div>
+              <span style={{
+                padding: "0.3rem 1rem", borderRadius: "100px", fontSize: "0.8rem", fontWeight: 500,
+                background: getGradeColor(parseFloat(pctInput)).bg,
+                color: getGradeColor(parseFloat(pctInput)).color
+              }}>
+                {getGradeColor(parseFloat(pctInput)).label}
+              </span>
+            </div>
+          )}
+        </div>
       </div>
     </>
   );
