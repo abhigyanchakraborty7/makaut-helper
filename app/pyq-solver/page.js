@@ -5,6 +5,7 @@ import Navbar from "../../components/Navbar";
 const css = `
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   .page { min-height: 100vh; padding: 7rem 1.5rem 4rem; max-width: 800px; margin: 0 auto; }
+  @media (max-width: 680px) { .page { padding-top: 8.5rem; } }
   .page-title {
     font-family: var(--font-syne), sans-serif;
     font-size: clamp(2rem, 5vw, 3rem); font-weight: 800;
