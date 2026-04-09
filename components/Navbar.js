@@ -1,13 +1,14 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 
 const PROTECTED = ["/notes", "/predictor"];
 
 export default function Navbar({ openLogin }) {
   const path = usePathname();
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
   const [isSignUp, setIsSignUp] = useState(false);
@@ -155,8 +156,6 @@ export default function Navbar({ openLogin }) {
           .nav-links { display: none; }
           .hamburger { display: flex; }
         }
-
-        /* Avatar */
         .avatar-wrap { position: relative; }
         .avatar-btn {
           width: 34px; height: 34px; border-radius: 50%;
@@ -169,8 +168,6 @@ export default function Navbar({ openLogin }) {
         }
         .avatar-btn:hover { border-color: #00e5ff; }
         .avatar-btn img { width: 100%; height: 100%; object-fit: cover; }
-
-        /* Dropdown */
         .avatar-dropdown {
           position: absolute; top: calc(100% + 10px); right: 0;
           background: #111; border: 1px solid rgba(255,255,255,0.1);
@@ -196,8 +193,6 @@ export default function Navbar({ openLogin }) {
         .dropdown-btn:hover { background: rgba(255,255,255,0.06); color: #fff; }
         .dropdown-btn.logout { color: #ff6b6b; }
         .dropdown-btn.logout:hover { background: rgba(255,107,107,0.08); }
-
-        /* Mobile user row */
         .mobile-user-row {
           display: flex; align-items: center; gap: 0.75rem;
           padding-bottom: 1rem;
@@ -213,8 +208,12 @@ export default function Navbar({ openLogin }) {
         .mobile-avatar img { width: 100%; height: 100%; object-fit: cover; }
         .mobile-user-name { font-size: 0.875rem; color: #fff; font-weight: 600; }
         .mobile-user-email { font-size: 0.72rem; color: rgba(255,255,255,0.35); }
-
-        /* Modal */
+        .mobile-profile-btn {
+          background: none; border: none; color: rgba(255,255,255,0.6);
+          font-size: 0.9rem; text-align: left; cursor: pointer; padding: 0;
+          font-family: inherit;
+        }
+        .mobile-profile-btn:hover { color: #00e5ff; }
         .modal-overlay {
           position: fixed; inset: 0; z-index: 200;
           background: rgba(0,0,0,0.75); backdrop-filter: blur(6px);
@@ -294,6 +293,9 @@ export default function Navbar({ openLogin }) {
                       <div className="dropdown-name">{user.user_metadata?.full_name || "User"}</div>
                       <div className="dropdown-email">{user.email}</div>
                     </div>
+                    <button className="dropdown-btn" onClick={() => { router.push("/profile"); setDropdownOpen(false); }}>
+                      👤 My Profile
+                    </button>
                     <button className="dropdown-btn logout" onClick={handleLogout}>
                       🚪 Sign out
                     </button>
@@ -324,6 +326,11 @@ export default function Navbar({ openLogin }) {
           </div>
         )}
         {links.map(l => renderLink(l, true))}
+        {user && (
+          <button className="mobile-profile-btn" onClick={() => { setOpen(false); router.push("/profile"); }}>
+            👤 My Profile
+          </button>
+        )}
         {user ? (
           <button className="nav-cta" style={{ width: "fit-content", color: "#ff6b6b", borderColor: "rgba(255,107,107,0.35)" }} onClick={handleLogout}>
             Sign out
