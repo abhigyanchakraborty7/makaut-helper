@@ -99,15 +99,13 @@ const css = `
 
   /* Percentage converter */
   .pct-input-row {
-    display: flex; gap: 0.75rem; align-items: flex-end;
+    display: flex; gap: 0.75rem; align-items: center;
   }
-  .pct-field { flex: 1; display: flex; flex-direction: column; gap: 0.4rem; }
-  .pct-field label { font-size: 0.75rem; color: rgba(255,255,255,0.35); text-transform: uppercase; letter-spacing: 0.08em; }
   .pct-convert-btn {
     background: #00e5ff; color: #080808; border: none; border-radius: 10px;
     padding: 0.6rem 1.25rem; font-size: 0.875rem; font-weight: 600;
     cursor: pointer; transition: all 0.2s; font-family: var(--font-dm), sans-serif;
-    white-space: nowrap; height: 42px;
+    white-space: nowrap; flex-shrink: 0;
   }
   .pct-convert-btn:hover { background: #33ecff; }
   .pct-result {
@@ -135,8 +133,8 @@ const css = `
     .result-card { padding: 1.5rem 1rem; }
     .result-breakdown { gap: 1rem; }
     .breakdown-val { font-size: 1rem; }
-    .pct-input-row { flex-direction: column; }
-    .pct-convert-btn { width: 100%; height: auto; padding: 0.65rem; }
+    .pct-input-row { flex-direction: column; align-items: stretch; }
+    .pct-convert-btn { width: 100%; padding: 0.65rem; }
     .pct-big { font-size: 2rem; }
   }
 `;
@@ -155,8 +153,6 @@ export default function CGPAPage() {
   const [sgpas, setSgpas] = useState(Array(8).fill(""));
   const [cgpa, setCgpa] = useState(null);
   const [error, setError] = useState("");
-
-  // Percentage converter state
   const [pctInput, setPctInput] = useState("");
   const [percentage, setPercentage] = useState(null);
   const [pctError, setPctError] = useState("");
@@ -179,13 +175,11 @@ export default function CGPAPage() {
   };
 
   const convertToPercentage = () => {
-    setPctError("");
-    setPercentage(null);
+    setPctError(""); setPercentage(null);
     const val = parseFloat(pctInput);
     if (isNaN(val)) { setPctError("Please enter a valid CGPA."); return; }
     if (val < 0 || val > 10) { setPctError("CGPA must be between 0 and 10."); return; }
-    const pct = ((val - 0.75) * 10).toFixed(2);
-    setPercentage(pct);
+    setPercentage(((val - 0.75) * 10).toFixed(2));
   };
 
   const gradeInfo = cgpa ? getGradeColor(parseFloat(cgpa)) : null;
@@ -202,11 +196,8 @@ export default function CGPAPage() {
           <span className="card-label">Step 1 — How many semesters completed?</span>
           <div className="sem-selector">
             {[1,2,3,4,5,6,7,8].map(n => (
-              <button
-                key={n}
-                className={`sem-btn ${numSem === n ? "active" : ""}`}
-                onClick={() => { setNumSem(n); setCgpa(null); setError(""); }}
-              >
+              <button key={n} className={`sem-btn ${numSem === n ? "active" : ""}`}
+                onClick={() => { setNumSem(n); setCgpa(null); setError(""); }}>
                 {n}
               </button>
             ))}
@@ -219,17 +210,14 @@ export default function CGPAPage() {
             {Array.from({ length: numSem }, (_, i) => (
               <div className="sgpa-field" key={i}>
                 <label>Semester {i + 1}</label>
-                <input
-                  type="number" placeholder="e.g. 8.5" min="0" max="10" step="0.01"
-                  value={sgpas[i]} onChange={e => updateSgpa(i, e.target.value)}
-                />
+                <input type="number" placeholder="e.g. 8.5" min="0" max="10" step="0.01"
+                  value={sgpas[i]} onChange={e => updateSgpa(i, e.target.value)} />
               </div>
             ))}
           </div>
         </div>
 
         <button className="calc-btn" onClick={calculate}>Calculate CGPA</button>
-
         {error && <p className="error-msg">{error}</p>}
 
         {cgpa && !error && (
@@ -264,15 +252,14 @@ export default function CGPAPage() {
         <p className="section-sub">Formula: Percentage = (CGPA − 0.75) × 10 &nbsp;·&nbsp; As per MAKAUT standard</p>
 
         <div className="card">
-          <span className="card-label">Enter your CGPA</span>
+          <span className="card-label">CGPA (0 – 10)</span>
           <div className="pct-input-row">
-            <div className="pct-field">
-              <label>CGPA (0 – 10)</label>
-              <input
-                type="number" placeholder="e.g. 7.8" min="0" max="10" step="0.01"
-                value={pctInput} onChange={e => { setPctInput(e.target.value); setPercentage(null); setPctError(""); }}
-              />
-            </div>
+            <input
+              type="number" placeholder="Enter your CGPA e.g. 7.8"
+              min="0" max="10" step="0.01"
+              value={pctInput}
+              onChange={e => { setPctInput(e.target.value); setPercentage(null); setPctError(""); }}
+            />
             <button className="pct-convert-btn" onClick={convertToPercentage}>Convert →</button>
           </div>
           {pctError && <p className="pct-error">{pctError}</p>}
