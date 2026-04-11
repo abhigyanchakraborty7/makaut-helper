@@ -80,6 +80,7 @@ export default function Navbar({ openLogin }) {
     { href: "/predictor", label: "Predictor" },
     { href: "/notes", label: "Notes" },
     { href: "/cgpa", label: "CGPA" },
+    { href: "/scholarship", label: "Scholarship" },
   ];
 
   const getInitials = (user) => {

@@ -227,6 +227,7 @@ export default function Home() {
     { icon: "🔮", title: "Important Questions", desc: "AI-predicted most-expected questions, subject-wise before your exams.", href: "/predictor" },
     { icon: "📝", title: "Notes Generator", desc: "Get exam-ready, unit-wise short notes for any MAKAUT subject.", href: "/notes" },
     { icon: "🧮", title: "CGPA Calculator", desc: "Calculate your CGPA instantly with MAKAUT's exact grading system.", href: "/cgpa" },
+    { icon: "🎓", title: "Scholarship Finder", desc: "Find all scholarships and government schemes you're eligible for based on your profile.", href: "/scholarship" },
   ];
 
   return (
