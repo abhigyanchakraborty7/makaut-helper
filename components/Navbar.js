@@ -274,7 +274,7 @@ export default function Navbar({ openLogin }) {
         {/* Logo + dev credit on the left */}
         <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
           <Link href="/" className="nav-logo">
-  <img src="/logo.png" alt="makaut.helper" style={{ height: "56px", width: "auto", display: "block" }} />
+  <img src="/logo.png" alt="makaut.helper" style={{ height: "64px", width: "auto", display: "block" }} />
 </Link>
           <span className="nav-dev">Developed by Abhigyan Chakraborty</span>
         </div>
