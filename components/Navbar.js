@@ -126,6 +126,7 @@ export default function Navbar({ openLogin }) {
           letter-spacing: -0.02em; color: #fff; text-decoration: none;
         }
         .nav-logo span { color: #00e5ff; }
+        .nav-dev { font-size: 0.7rem; color: rgba(255,255,255,0.28); font-weight: 300; text-align: left; }
         .nav-links { display: flex; gap: 1.75rem; list-style: none; margin: 0; padding: 0; }
         .nav-links a {
           color: rgba(255,255,255,0.5); text-decoration: none;
@@ -133,8 +134,7 @@ export default function Navbar({ openLogin }) {
         }
         .nav-links a:hover, .nav-links a.active { color: #fff; }
         .nav-links a.active { color: #00e5ff; }
-        .nav-dev { font-size: 0.7rem; color: rgba(255,255,255,0.28); font-weight: 300; text-align: right; }
-        .nav-right { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+        .nav-right { display: flex; align-items: center; gap: 1rem; }
         .nav-cta {
           padding: 0.45rem 1.1rem;
           border: 1px solid rgba(0,229,255,0.35);
@@ -271,43 +271,46 @@ export default function Navbar({ openLogin }) {
       `}</style>
 
       <nav className="nav">
-        <Link href="/" className="nav-logo">makaut<span>.</span>helper</Link>
+        {/* Logo + dev credit on the left */}
+        <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
+          <Link href="/" className="nav-logo">makaut<span>.</span>helper</Link>
+          <span className="nav-dev">Developed by Abhigyan Chakraborty</span>
+        </div>
+
         <ul className="nav-links">
           {links.map(l => <li key={l.href}>{renderLink(l)}</li>)}
         </ul>
+
         <div className="nav-right">
           <button className="hamburger" onClick={() => setOpen(!open)} aria-label="Menu">
             <span /><span /><span />
           </button>
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "4px" }}>
-            {user ? (
-              <div className="avatar-wrap" ref={dropdownRef}>
-                <button className="avatar-btn" onClick={() => setDropdownOpen(!dropdownOpen)}>
-                  {getAvatar(user)
-                    ? <img src={getAvatar(user)} alt="avatar" referrerPolicy="no-referrer" />
-                    : getInitials(user)
-                  }
-                </button>
-                {dropdownOpen && (
-                  <div className="avatar-dropdown">
-                    <div className="dropdown-user">
-                      <div className="dropdown-name">{user.user_metadata?.full_name || "User"}</div>
-                      <div className="dropdown-email">{user.email}</div>
-                    </div>
-                    <button className="dropdown-btn" onClick={() => { router.push("/profile"); setDropdownOpen(false); }}>
-                      👤 My Profile
-                    </button>
-                    <button className="dropdown-btn logout" onClick={handleLogout}>
-                      🚪 Sign out
-                    </button>
+          {user ? (
+            <div className="avatar-wrap" ref={dropdownRef}>
+              <button className="avatar-btn" onClick={() => setDropdownOpen(!dropdownOpen)}>
+                {getAvatar(user)
+                  ? <img src={getAvatar(user)} alt="avatar" referrerPolicy="no-referrer" />
+                  : getInitials(user)
+                }
+              </button>
+              {dropdownOpen && (
+                <div className="avatar-dropdown">
+                  <div className="dropdown-user">
+                    <div className="dropdown-name">{user.user_metadata?.full_name || "User"}</div>
+                    <div className="dropdown-email">{user.email}</div>
                   </div>
-                )}
-              </div>
-            ) : (
-              <button className="nav-cta" onClick={() => setShowLogin(true)}>Login</button>
-            )}
-            <span className="nav-dev">Developed by Abhigyan Chakraborty</span>
-          </div>
+                  <button className="dropdown-btn" onClick={() => { router.push("/profile"); setDropdownOpen(false); }}>
+                    👤 My Profile
+                  </button>
+                  <button className="dropdown-btn logout" onClick={handleLogout}>
+                    🚪 Sign out
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            <button className="nav-cta" onClick={() => setShowLogin(true)}>Login</button>
+          )}
         </div>
       </nav>
 
