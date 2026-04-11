@@ -11,6 +11,15 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en" className={`${syne.variable} ${dm.variable}`}>
+      <head>
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-LD677WV39C" />
+        <script dangerouslySetInnerHTML={{ __html: `
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-LD677WV39C');
+        `}} />
+      </head>
       <body style={{ margin: 0, background: "#080808", color: "#f0f0f0", fontFamily: "var(--font-dm), sans-serif", overflowX: "hidden" }}>
         {children}
       </body>
